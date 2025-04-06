@@ -1,12 +1,20 @@
-# Use a imagem oficial do Node.js 20 como base
-FROM node:20-slim
+# Etapa de build
+FROM node:20-alpine as build-stage
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-RUN npm install -g vite
+COPY . .
 
-RUN ln -s /usr/local/bin/node /usr/bin/node
+RUN npm install && npm run build
 
-ENTRYPOINT ["npx", "evolution-manager", "server", "start"] 
+# Etapa de produção
+FROM nginx:alpine as production-stage
 
-EXPOSE 9615
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Copia config customizado do Nginx, se tiver
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
