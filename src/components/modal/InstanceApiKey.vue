@@ -18,7 +18,7 @@
           <!-- CAMPO DA CHAVE DE API -->
           <v-text-field
             v-model="connection.globalApiKey"
-            label="Global API Key"
+            label="token"
             required
             outlined
             :type="revelPassword ? 'text' : 'password'"
